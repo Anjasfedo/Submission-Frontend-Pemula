@@ -1,5 +1,7 @@
 const Books = [];
 
+let showBooks = Books;
+
 const RENDER_EVENT = "render-book";
 
 const genereteId = () => +new Date();
@@ -41,7 +43,6 @@ const makeBook = (bookObject) => {
     notCompleteButton.classList.add("green");
 
     notCompleteButton.addEventListener("click", () => {
-      console.log("anjas");
       toNotCompleteHandler(bookObject.id);
     });
 
@@ -67,36 +68,36 @@ const makeBook = (bookObject) => {
 };
 
 const toCompleteHandler = (bookID) => {
-  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
+  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
 
   if (bookTargetIndex === -1)
     console.error("Buku dengan ID", bookID, "tidak ditemukan.");
 
-  Books[bookTargetIndex].isComplete = true;
+  showBooks[bookTargetIndex].isComplete = true;
 
   document.dispatchEvent(new Event(RENDER_EVENT));
   saveData();
 };
 
 const deleteHandler = (bookID) => {
-  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
+  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
 
   if (bookTargetIndex === -1)
     console.error("Buku dengan ID", bookID, "tidak ditemukan.");
 
-  Books.splice(bookTargetIndex, 1);
+  showBooks.splice(bookTargetIndex, 1);
 
   document.dispatchEvent(new Event(RENDER_EVENT));
   saveData();
 };
 
 const toNotCompleteHandler = (bookID) => {
-  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
+  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
 
   if (bookTargetIndex === -1)
     console.error("Buku dengan ID", bookID, "tidak ditemukan.");
 
-  Books[bookTargetIndex].isComplete = false;
+  showBooks[bookTargetIndex].isComplete = false;
 
   document.dispatchEvent(new Event(RENDER_EVENT));
   saveData();
@@ -107,6 +108,13 @@ document.addEventListener("DOMContentLoaded", () => {
   submitForm.addEventListener("submit", (event) => {
     event.preventDefault();
     addBook();
+  });
+
+  const searchForm = document.getElementById("searchBook");
+  searchForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    searchBookHandler();
+    console.log(showBooks);
   });
 
   if (isStorageExist()) {
@@ -121,7 +129,6 @@ const addBook = () => {
   const inputIsComplete = document.getElementById(
     "inputBookIsComplete"
   ).checked;
-  console.log(inputIsComplete);
 
   const bookID = genereteId();
 
@@ -133,7 +140,22 @@ const addBook = () => {
     inputIsComplete
   );
 
-  Books.push(bookObject);
+  showBooks.push(bookObject);
+
+  document.dispatchEvent(new Event(RENDER_EVENT));
+  saveData();
+};
+
+const searchBookHandler = () => {
+  const searchTitle = document
+    .getElementById("searchBookTitle")
+    .value.toLowerCase();
+
+  const searchedBooks = Books.filter((book) =>
+    book.title.toLowerCase().includes(searchTitle)
+  );
+
+  showBooks = searchedBooks;
 
   document.dispatchEvent(new Event(RENDER_EVENT));
   saveData();
@@ -146,7 +168,7 @@ document.addEventListener(RENDER_EVENT, () => {
   const completeBook = document.getElementById("completeBookshelfList");
   completeBook.innerHTML = "";
 
-  for (const data of Books) {
+  for (const data of showBooks) {
     const bookElement = makeBook(data);
 
     if (!data.isComplete) {
@@ -177,10 +199,6 @@ const saveData = () => {
 
     document.dispatchEvent(new Event(SAVE_EVENT));
   }
-
-  document.addEventListener(SAVE_EVENT, () => {
-    console.log(localStorage.getItem(STORAGE_KEY));
-  });
 };
 
 const loadDataFromStorage = () => {
