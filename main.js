@@ -81,15 +81,24 @@ const makeBook = (bookObject) => {
   return container;
 };
 
+// Function to clear the input value of the search field
+const clearInputSearch = () => {
+  document.getElementById("searchBookTitle").value = "";
+};
+
 // Handler for marking a book as read
 const toCompleteHandler = (bookID) => {
-  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
+  // Find the index of the book in the Books array
+  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
 
-  // Check if the book is found before updating isComplete property
+  // Check if the book is found before updating the isComplete property
   if (bookTargetIndex === -1)
-    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
+    console.error(`Book with ID: ${bookID} Not Found.`);
 
-  showBooks[bookTargetIndex].isComplete = true;
+  // Mark the book as complete
+  Books[bookTargetIndex].isComplete = true;
+  showBooks = Books;
+  clearInputSearch(); // Clear the search input
 
   // Trigger rendering event and save data
   document.dispatchEvent(new Event(RENDER_EVENT));
@@ -98,13 +107,17 @@ const toCompleteHandler = (bookID) => {
 
 // Handler for deleting a book
 const deleteHandler = (bookID) => {
-  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
+  // Find the index of the book in the Books array
+  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
 
   // Check if the book is found before deleting
   if (bookTargetIndex === -1)
-    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
+    console.error(`Book with ID: ${bookID} Not Found.`);
 
-  showBooks.splice(bookTargetIndex, 1);
+  // Delete the book from the Books array
+  Books.splice(bookTargetIndex, 1);
+  showBooks = Books;
+  clearInputSearch(); // Clear the search input
 
   // Trigger rendering event and save data
   document.dispatchEvent(new Event(RENDER_EVENT));
@@ -113,13 +126,17 @@ const deleteHandler = (bookID) => {
 
 // Handler for marking a book as unread
 const toNotCompleteHandler = (bookID) => {
-  const bookTargetIndex = showBooks.findIndex((book) => book.id === bookID);
+  // Find the index of the book in the Books array
+  const bookTargetIndex = Books.findIndex((book) => book.id === bookID);
 
-  // Check if the book is found before updating isComplete property
+  // Check if the book is found before updating the isComplete property
   if (bookTargetIndex === -1)
-    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
+    console.error(`Book with ID: ${bookID} Not Found.`);
 
-  showBooks[bookTargetIndex].isComplete = false;
+  // Mark the book as not complete (unread)
+  Books[bookTargetIndex].isComplete = false;
+  showBooks = Books;
+  clearInputSearch(); // Clear the search input
 
   // Trigger rendering event and save data
   document.dispatchEvent(new Event(RENDER_EVENT));
@@ -166,12 +183,13 @@ const addBook = () => {
     bookID,
     inputTitle,
     inputAuthor,
-    inputYear,
+    parseInt(inputYear), // Convert the inputYear to an integer using parseInt
     inputIsComplete
   );
 
   // Adding the book to the array
-  showBooks.push(bookObject);
+  Books.push(bookObject);
+  showBooks = Books;
 
   // Trigger rendering event and save data
   document.dispatchEvent(new Event(RENDER_EVENT));
@@ -229,7 +247,7 @@ const STORAGE_KEY = "BOOK_SHELF";
 // Function to check if localStorage is supported
 const isStorageExist = () => {
   if (typeof Storage === undefined) {
-    alert("Maaf Browser Anda Tidak Support locakStorage");
+    alert("Maaf Browser Anda Tidak Support localStorage");
     return false;
   }
 
