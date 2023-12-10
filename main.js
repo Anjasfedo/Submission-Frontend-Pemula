@@ -87,7 +87,7 @@ const toCompleteHandler = (bookID) => {
 
   // Check if the book is found before updating isComplete property
   if (bookTargetIndex === -1)
-    console.error("Book with ID", bookID, "not found.");
+    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
 
   showBooks[bookTargetIndex].isComplete = true;
 
@@ -102,7 +102,7 @@ const deleteHandler = (bookID) => {
 
   // Check if the book is found before deleting
   if (bookTargetIndex === -1)
-    console.error("Book with ID", bookID, "not found.");
+    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
 
   showBooks.splice(bookTargetIndex, 1);
 
@@ -117,7 +117,7 @@ const toNotCompleteHandler = (bookID) => {
 
   // Check if the book is found before updating isComplete property
   if (bookTargetIndex === -1)
-    console.error("Book with ID", bookID, "not found.");
+    console.error(`Buku Dengan ID: ${bookID} Tidak Ditemukan.`);
 
   showBooks[bookTargetIndex].isComplete = false;
 
@@ -229,7 +229,7 @@ const STORAGE_KEY = "BOOK_SHELF";
 // Function to check if localStorage is supported
 const isStorageExist = () => {
   if (typeof Storage === undefined) {
-    alert("Your Browser Does Not Support localStorage");
+    alert("Maaf Browser Anda Tidak Support locakStorage");
     return false;
   }
 
